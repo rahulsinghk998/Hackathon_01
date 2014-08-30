@@ -152,8 +152,11 @@
    
                    calcBackProject(&hue, 1, 0, hist, backproj, &phranges);
                    backproj &= mask;
-                   RotatedRect trackBox = CamShift(backproj, trackWindow,
+                   RotatedRect trackBox;
+                   if (trackWindow.height > 0 && trackWindow.width > 0){
+                  trackBox = CamShift(backproj, trackWindow,
                                        TermCriteria( CV_TERMCRIT_EPS | CV_TERMCRIT_ITER, 10, 1 ));
+                 }else{ trackBox = RotatedRect(Point(trackWindow.x+(trackWindow.width)/2,trackWindow.y-(trackWindow.height)/2), Size(trackWindow.width,trackWindow.height),0);}
                    if( trackWindow.area() <= 1 )
                    {
                        int cols = backproj.cols, rows = backproj.rows, r = (MIN(cols, rows) + 5)/6;
@@ -166,7 +169,7 @@
                        cvtColor( backproj, image, COLOR_GRAY2BGR );
                      line( image, Point(trackBox.center.x-10,trackBox.center.y), Point(trackBox.center.x +10,trackBox.center.y),Scalar(0,0,255), 2, CV_AA );
                      line( image, Point(trackBox.center.x,trackBox.center.y-10), Point(trackBox.center.x,trackBox.center.y +10),Scalar(0,0,255), 2, CV_AA );
-                   //ellipse( image, trackBox, Scalar(0,255,0), 3, CV_AA );
+                     ellipse( image, trackBox, Scalar(0,255,0), 3, CV_AA );
                }
            }
            else if( trackObject < 0 )
